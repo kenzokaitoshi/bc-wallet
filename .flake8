@@ -1,0 +1,39 @@
+# Copyright 2023 Néon-ledger
+
+[flake8]
+
+# display at the end the number of flagged code
+count = true
+# display stats about same flagged 
+statistics = True
+
+exclude =
+    .git,
+    __pycache__,
+    tests,
+
+# disable noqa to avoid one at a time rule 
+disable_noqa = False
+
+# enforce category we want to flag
+select =
+    # class violations are “errors” reported by pycodestyle
+    E,
+    # class violations are “warnings” reported by pycodestyle
+    W,
+    # class violations are reported by pyflakes
+    F,
+    # complexity
+    C90
+
+# could be straighten a little bit
+max-complexity = 10
+
+# it's a sample of ignore rule we want to avoid to be flagged
+# H301: one import per line
+# H306: imports not in alphabetical order (time, os)
+# w503: Line break occurred before a binary operator
+ignore = H301,H306,W503
+
+# https://flake8.pycqa.org/en/latest/user/options.html#cmdoption-flake8-per-file-ignores
+# per-file-ignores =
