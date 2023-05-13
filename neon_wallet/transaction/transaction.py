@@ -18,6 +18,7 @@ class Transaction:
         self.tx_ins = tx_ins
         # The list of transaction outputs
         self.tx_outs = tx_outs
+        self.id = self.get_id()
 
     # Une méthode pour calculer l'identifiant de la transaction
     # à partir de son contenu

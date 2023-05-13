@@ -104,6 +104,7 @@ def validate_tx_in(
 
     # Extract address from unspent transaction output
     address = referenced_uTx_out.address
+    print('ref address', address)
 
     # Create an ECDSA public key from the address
     key = ecdsa.VerifyingKey.from_string(
@@ -167,7 +168,7 @@ def is_valid_tx_in_structure(tx_in: TxIn) -> bool:
     elif not isinstance(tx_in.tx_out_id, str):
         print("invalid txOutId type in txIn")
         return False
-    elif not isinstance(tx_in.tx_out_index, float):
+    elif not isinstance(tx_in.tx_out_index, int):
         print("invalid txOutIndex type in txIn")
         return False
     else:
