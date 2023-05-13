@@ -17,13 +17,13 @@ COINBASE_AMOUNT: float = 50
 def get_transaction_id(transaction: Transaction) -> str:
     """get transaction id"""
     # Extract list of transaction entries from transaction
-    tx_ins = transaction.txIns
+    tx_ins = transaction.tx_ins
     # Concatenate the identifiers and indices of the outputs of
     # transaction of transaction entries
-    tx_ = [tx_in.txOutId + str(tx_in.txOutIndex) for tx_in in tx_ins]
+    tx_ = [tx_in.tx_out_id + str(tx_in.tx_out_index) for tx_in in tx_ins]
     tx_in_content = "".join(tx_)
     # Extract list of transaction outputs from transaction
-    tx_outs = transaction.txOuts
+    tx_outs = transaction.tx_outs
     # Concatenate addresses and amounts from transaction outputs
     tx_out_content = "".join(
         [tx_out.address + str(tx_out.amount) for tx_out in tx_outs]
@@ -55,7 +55,7 @@ def validate_transaction(
     has_valid_tx_ins = all(
         [
             validate_tx_in(txIn, transaction, a_unspent_tx_outs)
-            for txIn in transaction.txIns
+            for txIn in transaction.tx_ins
         ]
     )
 
@@ -64,11 +64,11 @@ def validate_transaction(
         return False
 
     # Calculate sum of amounts of transaction inputs
-    t_tx = [get_tx_in_amount(txIn, a_unspent_tx_outs) for txIn in transaction.txIns]
+    t_tx = [get_tx_in_amount(txIn, a_unspent_tx_outs) for txIn in transaction.tx_ins]
     total_tx_in_values = sum(t_tx)
 
     # Calculate sum of transaction output amounts
-    total_tx_out_values = sum([txOut.amount for txOut in transaction.txOuts])
+    total_tx_out_values = sum([txOut.amount for txOut in transaction.tx_outs])
 
     # Check if sums are equal
     if total_tx_out_values != total_tx_in_values:
@@ -93,7 +93,8 @@ def validate_tx_in(
         (
             uTxO
             for uTxO in a_unspent_tx_outs
-            if (uTxO.txOutId == tx_in.txOutId) and (uTxO.txOutIndex == tx_in.txOutIndex)
+            if (uTxO.tx_out_id == tx_in.tx_out_id)
+            and (uTxO.tx_out_index == tx_in.tx_out_index)
         ),
         None,
     )
@@ -134,21 +135,21 @@ def is_valid_transaction_structure(transaction: Transaction) -> bool:
         return False
 
     # Check if transaction inputs are a list
-    if not isinstance(transaction.txIns, list):
+    if not isinstance(transaction.tx_ins, list):
         print("invalid txIns type in transaction")
         return False
 
     # Check if all transaction inputs have a valid structure
-    if not all([is_valid_tx_in_structure(txIn) for txIn in transaction.txIns]):
+    if not all([is_valid_tx_in_structure(txIn) for txIn in transaction.tx_ins]):
         return False
 
     # Check if transaction outputs are a list
-    if not isinstance(transaction.txOuts, list):
+    if not isinstance(transaction.tx_outs, list):
         print("invalid txOuts type in transaction")
         return False
 
     # Check if all transaction outputs have a valid structure
-    _tx = [is_valid_tx_out_structure(txOut) for txOut in transaction.txOuts]
+    _tx = [is_valid_tx_out_structure(txOut) for txOut in transaction.tx_outs]
     if not all(_tx):
         return False
 
@@ -163,10 +164,10 @@ def is_valid_tx_in_structure(tx_in: TxIn) -> bool:
     elif not isinstance(tx_in.signature, str):
         print("invalid signature type in txIn")
         return False
-    elif not isinstance(tx_in.txOutId, str):
+    elif not isinstance(tx_in.tx_out_id, str):
         print("invalid txOutId type in txIn")
         return False
-    elif not isinstance(tx_in.txOutIndex, float):
+    elif not isinstance(tx_in.tx_out_index, float):
         print("invalid txOutIndex type in txIn")
         return False
     else:
@@ -220,8 +221,8 @@ def get_tx_in_amount(
     """get transaction Amount in"""
     return float(
         find_unspent_tx_out(
-            tx_in.txOutId,
-            tx_in.txOutIndex,
+            tx_in.tx_out_id,
+            tx_in.tx_out_index,
             a_unspent_tx_outs,
         ).amount
     )
@@ -238,7 +239,7 @@ def find_unspent_tx_out(
         (
             uTxO
             for uTxO in a_unspent_tx_outs
-            if uTxO.txOutId == transaction_id and uTxO.txOutIndex == index
+            if uTxO.tx_out_id == transaction_id and uTxO.tx_out_index == index
         ),
         None,
     )
