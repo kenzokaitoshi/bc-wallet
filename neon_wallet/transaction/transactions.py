@@ -290,7 +290,7 @@ def to_hex_string(byte_array: List[Any]) -> str:
     return "".join(hex_list)
 
 
-# Define a function to sign a txIn with a key private 
+# Define a function to sign a txIn with a key private
 # and a list of UnspentTxOuts
 def sign_tx_in(
     transaction: Transaction,

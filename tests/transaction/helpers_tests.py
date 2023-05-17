@@ -1,6 +1,8 @@
 # Create dummy data to test the function
 
-# Create an ECDSA private key and public key for the owner of an unspent release
+# Create an ECDSA private key and public key for the owner 
+# of an unspent release
+from typing import Tuple
 import ecdsa
 from neon_wallet.transaction.transaction import Transaction
 from neon_wallet.transaction.tx_in import TxIn
@@ -14,6 +16,48 @@ public_key = private_key.get_verifying_key()
 
 # Convert the public key to a hex string for the address
 address = public_key.to_string().hex()
+
+
+def unspent_tx_outs() -> list[UnspentTxOut]:
+    """get seed of unspent_tx_outs"""
+    # Create an unspent exit belonging to this address
+    # with an arbitrary amount
+    unspent_tx_out = UnspentTxOut("1234", 0, address, 50)
+
+    # Create a list containing this unspent output
+    return [unspent_tx_out]
+
+
+def seeder() -> Tuple:
+    """seeder"""
+    # Create an unspent exit belonging to this address
+    # with an arbitrary amount
+    unspent_tx_out = UnspentTxOut("1234", 0, address, 50)
+
+    # Create a list containing this unspent output
+    a_unspent_tx_outs = [unspent_tx_out]
+
+    # Create a transaction input that references this unspent output
+    # Create a transaction input that references this unspent output
+    tx_in = TxIn("1234", 0, "")
+
+    # Create a new transaction that contains this transaction entry
+    # and an arbitrary transaction output
+    _tx = Transaction(
+        [tx_in],
+        [
+            TxOut(
+                "04bfcab8722991ae774db48f934ca79cfb7dd991229153b9f732ba5334aafcd8e7266e47076996b55a14bf9913ee3145ce0cfc1372ada8ada74bd287450313534a",
+                50,
+            )
+        ],
+    )
+
+    # Sign the transaction entry with the private key and id of
+    # the transaction
+    tx_in.signature = private_key.sign(bytes.fromhex(_tx.id)).hex()
+
+    return _tx, a_unspent_tx_outs, tx_in
 
 
 # Create some sample transactions and UTXOs for testing
@@ -75,6 +119,7 @@ tx3 = Transaction(
     ],
 )
 
+tx_out_address = "04bfcab8722991ae774db48f934ca79cfb7dd991229153b9f732ba5334aafcd8e7266e47076996b55a14bf9913ee3145ce0cfc1372ada8ada74bd287450313534a"
 utxo1 = UnspentTxOut(
     tx_out_id="tx0",
     tx_out_index=0,
