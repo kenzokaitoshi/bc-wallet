@@ -3,34 +3,37 @@ helloworld/
 ├── bin/
 │
 ├── docs/
-│   ├── hello.md
+│   ├── neon-wallet.md
 │   └── world.md
 │
-├── helloworld/
+├── neon_wallet/
 │   ├── __init__.py
-│   ├── runner.py
-│   ├── hello/
+│   ├── transaction/
 │   │   ├── __init__.py
-│   │   ├── hello.py
-│   │   └── helpers.py
+│   │   ├── helpres_tx.py
+│   │   └── transaction.py
+|   |   └── tx_in.py
+|   |   └── tx_out.py
+|   |   └── unspent_tx_out.py
+|   |   └── transactions.py
 │   │
-│   └── world/
+│   └── wallet/
 │       ├── __init__.py
 │       ├── helpers.py
-│       └── world.py
+│       └── wallet.py
 │
 ├── data/
 │   ├── input.csv
 │   └── output.xlsx
 │
 ├── tests/
-│   ├── hello
+│   ├── transaction
 │   │   ├── helpers_tests.py
-│   │   └── hello_tests.py
+│   │   └── test_transaction.py
 │   │
-│   └── world/
+│   └── wallet/
 │       ├── helpers_tests.py
-│       └── world_tests.py
+│       └── test_wallet.py
 │
 ├── .gitignore
 ├── LICENSE

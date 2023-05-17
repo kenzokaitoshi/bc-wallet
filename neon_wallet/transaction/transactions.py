@@ -73,11 +73,10 @@ def validate_transaction(
 
     # Calculate sum of transaction output amounts
     total_tx_out_values = sum([txOut.amount for txOut in transaction.tx_outs])
-
     # Check if sums are equal
     if total_tx_out_values != total_tx_in_values:
         _id = transaction.id
-        print(f"totalTxOutValues !== totalTxInValues in tx: {_id}")
+        print(f"totalTxOutValues != totalTxInValues in tx: {_id}")
         return False
 
     return True
@@ -118,6 +117,7 @@ def validate_tx_in(
 
     # Check the signature of the transaction entry with the
     # public key and transaction id
+    print("signature: ", tx_in.signature)
     valid_signature = key.verify(
         bytes.fromhex(tx_in.signature), bytes.fromhex(transaction.id)
     )
@@ -268,30 +268,30 @@ def has_duplicates(tx_ins: List[TxIn]) -> Any:
     return False
 
 
-# Définir une fonction pour convertir un nombre en hexadécimal
+# Define a function to convert a number to hexadecimal
 def to_hex_string(byte_array: List[Any]) -> str:
     """convert to hex"""
-    # Définir une fonction pour convertir un tableau d'octets en
-    # une chaîne hexadécimale
-    # Créer une liste vide pour stocker les caractères hexadécimaux
+    # Define a function to convert a byte array to
+    # a hexadecimal string
+    # Create an empty list to store hexadecimal characters
     hex_list = []
-    # Parcourir le tableau d'octets
+    # Step through the byte array
     for byte in byte_array:
-        # Appliquer un masque binaire pour ne garder que les
-        # 8 bits de poids faible
+        # Apply a binary mask to keep only the
+        # 8 low bits
         byte = byte & 0xFF
-        # Convertir l'octet en hexadécimal et ajouter un zéro
-        # devant si nécessaire
+        # Convert byte to hexadecimal and add a zero
+        # in front if necessary
         hex_char = hex(byte)[2:].zfill(2)
-        # Ajouter le caractère hexadécimal à la liste
+        # Add hexadecimal character to list
         hex_list.append(hex_char)
-    # Joindre les caractères hexadécimaux en une seule chaîne
-    # et la retourner
+    # Join hex characters into a single string
+    # and return it
     return "".join(hex_list)
 
 
-# Définir une fonction pour signer un txIn avec une clé
-# privée et une liste de UnspentTxOuts
+# Define a function to sign a txIn with a key private 
+# and a list of UnspentTxOuts
 def sign_tx_in(
     transaction: Transaction,
     tx_in_index: int,
@@ -299,27 +299,27 @@ def sign_tx_in(
     a_unspent_tx_outs: List[UnspentTxOut],
 ) -> Any:
     """sign tx in"""
-    # Récupérer le txIn à signer
+    # Get the txIn to sign
     tx_in = transaction.tx_ins[tx_in_index]
 
-    # Récupérer l'id de la transaction à signer
+    # Get the id of the transaction to sign
     data_to_sign = transaction.id
 
-    # Trouver le UnspentTxOut qui correspond au txIn
+    # Find the UnspentTxOut which corresponds to the txIn
     ref_unspent_tx_out = find_unspent_tx_out(
         tx_in.tx_out_id, tx_in.tx_out_index, a_unspent_tx_outs
     )
 
-    # Si le UnspentTxOut n'existe pas, lever une exception
+    # If the UnspentTxOut does not exist, throw an exception
     if ref_unspent_tx_out is None:
         print("could not find referenced txOut")
         raise ValueError("could not find referenced txOut")
 
-    # Récupérer l'adresse du UnspentTxOut
+    # Get the UnspentTxOut address
     referenced_address = ref_unspent_tx_out.address
 
-    # Vérifier que la clé publique dérivée de la clé privée
-    # correspond à l'adresse du UnspentTxOut
+    # Verify that the public key derived from the private key
+    # corresponds to the address of the UnspentTxOut
     if get_public_key(private_key) != referenced_address:
         print(
             "trying to sign an input with private"
@@ -327,38 +327,38 @@ def sign_tx_in(
         )
         raise ValueError()
 
-    # Créer une clé ecdsa à partir de la clé privée en hexadécimal
+    # Create an ecdsa key from the private key in hexadecimal
     key = ecdsa.SigningKey.from_string(
         bytes.fromhex(private_key), curve=ecdsa.SECP256k1
     )
 
-    # Signer les données avec la clé et retourner la signature
-    # en hexadécimal
+    # Sign the data with the key and return the signature
+    # in hexadecimal
     signature = to_hex_string(key.sign(data_to_sign))
     return signature
 
 
-# Définir une fonction pour obtenir la clé publique à partir
-# de la clé privée
+# Define a function to get the public key from
+# of the private key
 def get_public_key(a_private_key: str) -> Any:
     """get public key"""
-    # Créer une clé ecdsa à partir de la clé privée en hexadécimal
+    # Create an ecdsa key from the private key in hexadecimal
     key = ecdsa.SigningKey.from_string(
         bytes.fromhex(a_private_key), curve=ecdsa.SECP256k1
     )
-    # Récupérer la clé publique associée et la retourner en hexadécimal
+    # Retrieve the associated public key and return it in hexadecimal
     return key.get_verifying_key().to_string().hex()
 
 
-# Définir une fonction pour mettre à jour la liste des UnspentTxOuts
-# à partir d'une liste de transactions
+# Define a function to update the list of UnspentTxOuts
+# from a list of transactions
 def update_unspent_tx_outs(
     a_transactions: List[Transaction],
     a_unspent_tx_outs: List[UnspentTxOut],
 ) -> List[UnspentTxOut]:
     """update unspent tx outs"""
-    # Créer une nouvelle liste de UnspentTxOuts à partir des txOuts
-    # des transactions
+    # Create a new list of UnspentTxOuts from txOuts
+    # of transactions
     new_unspent_tx_outs = []
     for _t in a_transactions:
         for index, tx_out in enumerate(_t.tx_outs):
@@ -366,8 +366,8 @@ def update_unspent_tx_outs(
                 UnspentTxOut(_t.id, index, tx_out.address, tx_out.amount)
             )
 
-    # Créer une liste de UnspentTxOuts consommés à partir des txIns
-    # des transactions
+    # Create a list of consumed UnspentTxOuts from txIns
+    # of transactions
     consumed_tx_outs = []
     for _t in a_transactions:
         for tx_in in _t.tx_ins:
@@ -375,8 +375,8 @@ def update_unspent_tx_outs(
                 UnspentTxOut(tx_in.tx_out_id, tx_in.tx_out_index, "", 0)
             )
 
-    # Filtrer la liste des UnspentTxOuts existants en enlevant
-    # ceux qui sont consommés
+    # Filter the list of existing UnspentTxOuts by removing
+    # those that are consumed
     resulting_unspent_tx_outs = []
     for u_txo in a_unspent_tx_outs:
         if not find_unspent_tx_out(
@@ -384,7 +384,7 @@ def update_unspent_tx_outs(
         ):
             resulting_unspent_tx_outs.append(u_txo)
 
-    # Ajouter les nouveaux UnspentTxOuts à la liste résultante
+    # Add the new UnspentTxOuts to the resulting list
     resulting_unspent_tx_outs.extend(new_unspent_tx_outs)
 
     return resulting_unspent_tx_outs

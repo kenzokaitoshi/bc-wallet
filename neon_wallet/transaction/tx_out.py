@@ -9,4 +9,4 @@ class TxOut:
         # The address of the recipient of the transaction
         self.address = address
         # The amount of the transaction in units of currency
-        self.amount = amount
+        self.amount = float(amount)
