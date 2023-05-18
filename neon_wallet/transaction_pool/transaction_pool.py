@@ -48,4 +48,34 @@ def is_valid_tx_for_pool(
     _tx: Transaction, at_transaction_pool: List[Transaction]
 ) -> bool:
     """is valid tx for pool"""
+    tx_pool_ins: List[TxIn] = get_tx_pool_ins(at_transaction_pool)
+
+    # Define a function to check if a transaction input
+    # is contained in a list of transaction entries
+    def contains_tx_in(tx_ins: List[TxIn], tx_in: TxIn) -> Any:
+        # Use the filter function to find the entry of
+        # corresponding transaction in the list
+        return next(
+            filter(
+                lambda tx_pool_in: tx_in.tx_out_index == tx_pool_in.tx_out_index
+                and tx_in.tx_out_id == tx_pool_in.tx_out_id,
+                tx_ins,
+            ),
+            None,
+        )
+
+    for tx_in in _tx.tx_ins:
+        if contains_tx_in(tx_pool_ins, tx_in):
+            print("txIn already found in the txPool")
+            return False
+
     return True
+
+
+# Define a function to get all transaction inputs
+# of a transaction pool
+def get_tx_pool_ins(a_transaction_pool: List[Transaction]) -> List[TxIn]:
+    """get transaction PoolIns"""
+    # Use list comprehension to extract entries Transaction
+    # of each transaction
+    return [txIn for tx in a_transaction_pool for txIn in tx.tx_ins]
