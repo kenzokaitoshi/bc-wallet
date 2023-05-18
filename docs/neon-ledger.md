@@ -1,6 +1,5 @@
-helloworld/
+neon-wallet/
 │
-├── bin/
 │
 ├── docs/
 │   ├── neon-wallet.md
