@@ -67,8 +67,9 @@ def validate_transaction(
         return False
 
     # Calculate sum of amounts of transaction inputs
+    tx_ins_list = transaction.tx_ins
     total_tx_in_values = sum(
-        [get_tx_in_amount(txIn, a_unspent_tx_outs) for txIn in transaction.tx_ins]
+        [get_tx_in_amount(txIn, a_unspent_tx_outs) for txIn in tx_ins_list]
     )
 
     # Calculate sum of transaction output amounts
@@ -92,7 +93,7 @@ def validate_tx_in(
     """validate transaction in"""
     # Find the unspent transaction output that
     # matches transaction input
-    referenced_uTx_out = next(
+    referenced_utx_out = next(
         (
             uTxO
             for uTxO in a_unspent_tx_outs
@@ -101,12 +102,12 @@ def validate_tx_in(
         ),
         None,
     )
-    if referenced_uTx_out is None:
+    if referenced_utx_out is None:
         print("referenced txOut not found: " + str(tx_in))
         return False
 
     # Extract address from unspent transaction output
-    address = referenced_uTx_out.address
+    address = referenced_utx_out.address
     print("ref address", address)
 
     # Create an ECDSA public key from the address
@@ -124,7 +125,7 @@ def validate_tx_in(
     if not valid_signature:
         tx_s = tx_in.signature
         tx_id = transaction.id
-        ref = referenced_uTx_out.address
+        ref = referenced_utx_out.address
         print(f"invalid txIn signature: {tx_s} txId: {tx_id} address: {ref}")
         return False
 
@@ -145,7 +146,8 @@ def is_valid_transaction_structure(transaction: Transaction) -> bool:
         return False
 
     # Check if all transaction inputs have a valid structure
-    if not all([is_valid_tx_in_structure(txIn) for txIn in transaction.tx_ins]):
+    _tx_ins = transaction.tx_ins
+    if not all([is_valid_tx_in_structure(txIn) for txIn in _tx_ins]):
         return False
 
     # Check if transaction outputs are a list

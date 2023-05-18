@@ -3,6 +3,7 @@ import ecdsa
 from neon_wallet.transaction.transaction import Transaction
 from neon_wallet.transaction.tx_in import TxIn
 from neon_wallet.transaction.tx_out import TxOut
+from tests.helpers_data import tx_out_1
 
 
 private_key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
@@ -23,7 +24,7 @@ def seeder() -> Transaction:
         [tx_in],
         [
             TxOut(
-                "04bfcab8722991ae774db48f934ca79cfb7dd991229153b9f732ba5334aafcd8e7266e47076996b55a14bf9913ee3145ce0cfc1372ada8ada74bd287450313534a",
+                tx_out_1,
                 50,
             )
         ],
