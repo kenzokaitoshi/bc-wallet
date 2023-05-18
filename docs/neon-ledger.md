@@ -29,11 +29,13 @@ neon-wallet/
 │   ├── transaction
 │   │   ├── helpers_tests.py
 │   │   └── test_transaction.py
-│   │
+│   ├── transaction_pool
+│   │   ├── helpers_tests.py
+│   │   └── test_transaction_pool.py
 │   └── wallet/
-│       ├── helpers_tests.py
-│       └── test_wallet.py
-│
+│   |    ├── helpers_tests.py
+│   |    └── test_wallet.py
+│   └── helpers_data.py
 ├── .gitignore
 ├── LICENSE
 └── README.md
