@@ -21,10 +21,10 @@ from tests.transaction.helpers_tests import (
     utxo2,
     utxo3,
     tx2,
-    tx_out_address,
     address,
     private_key,
 )
+from tests.helpers_data import tx_out_address
 
 
 # Define a test method that starts with test_
