@@ -13,10 +13,10 @@ public_key = private_key.get_verifying_key()
 address = public_key.to_string().hex()
 
 
-def seeder() -> Transaction:
+def tx_pool_seeder() -> Transaction:
     """seeder"""
     # Create a transaction input that references this unspent output
-    tx_in = TxIn("1234", 0, "")
+    tx_in = TxIn("12345", 0, "")
 
     # Create a new transaction that contains this transaction entry
     # and an arbitrary transaction output
@@ -25,7 +25,7 @@ def seeder() -> Transaction:
         [
             TxOut(
                 tx_out_1,
-                50,
+                60,
             )
         ],
     )
