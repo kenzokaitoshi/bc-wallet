@@ -31,7 +31,7 @@ from neon_wallet.wallet.wallet import Wallet
 PRIVATE_KEY = "node/wallet/private_key"
 
 
-class BitcoinWallet(Wallet[Transaction]):
+class CoinWallet(Wallet[Transaction]):
     """wallet class"""
 
     # Create an ECDSA object from the secp256k1 curve
@@ -41,9 +41,9 @@ class BitcoinWallet(Wallet[Transaction]):
     privateKeyLocation = os.environ.get("PRIVATE_KEY") or "{PRIVATE_KEY}"
     unspent_tx_outs: List[UnspentTxOut] = []
 
-    def __init__(self, symbol: str) -> None:
-        super(BitcoinWallet, self).__init__(symbol)
-        pass
+    def __init__(self, symbol: str = "BTC") -> None:
+        super(CoinWallet, self).__init__(symbol)
+        self.symbol = symbol
 
     # Define a function to read the private key from a file
     def get_private_from_wallet(self) -> str:
