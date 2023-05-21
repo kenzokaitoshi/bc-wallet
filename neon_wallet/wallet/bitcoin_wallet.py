@@ -13,25 +13,25 @@ import ecdsa
 # similar to lodash
 import pydash
 
-from neon_wallet.transaction.bitcoin_transaction import (
-    BitcoinTransaction as Transaction,
+from neon_wallet.transaction.coins.coin_transaction import (
+    CoinTransaction as Transaction,
 )
-from neon_wallet.transaction.transactions import (
+from neon_wallet.transaction.coins.transactions import (
     get_public_key,
     get_transaction_id,
     sign_tx_in,
 )
-from neon_wallet.transaction.tx_in import TxIn
+from neon_wallet.transaction.coins.tx_in import TxIn
 
-from neon_wallet.transaction.tx_out import TxOut
-from neon_wallet.transaction.unspent_tx_out import UnspentTxOut
+from neon_wallet.transaction.coins.tx_out import TxOut
+from neon_wallet.transaction.coins.unspent_tx_out import UnspentTxOut
 from neon_wallet.transaction_pool.transaction_pool import TransactionPool
 from neon_wallet.wallet.wallet import Wallet
 
 PRIVATE_KEY = "node/wallet/private_key"
 
 
-class BitcoinWallet(Wallet):
+class BitcoinWallet(Wallet[Transaction]):
     """wallet class"""
 
     # Create an ECDSA object from the secp256k1 curve
@@ -43,7 +43,7 @@ class BitcoinWallet(Wallet):
 
     def __init__(self, symbol: str) -> None:
         super(BitcoinWallet, self).__init__(symbol)
-        raise NotImplementedError
+        pass
 
     # Define a function to read the private key from a file
     def get_private_from_wallet(self) -> str:

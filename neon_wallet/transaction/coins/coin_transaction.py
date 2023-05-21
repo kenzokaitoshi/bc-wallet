@@ -3,19 +3,19 @@ import hashlib
 from typing import List
 from neon_wallet.transaction.transaction import Transaction
 
-from neon_wallet.transaction.tx_in import TxIn
-from neon_wallet.transaction.tx_out import TxOut
+from neon_wallet.transaction.coins.tx_in import TxIn
+from neon_wallet.transaction.coins.tx_out import TxOut
 
 
-class BitcoinTransaction(Transaction):
-    """Transaction"""
+class CoinTransaction(Transaction):
+    """CoinsTransaction"""
 
     id: str
     tx_ins: List[TxIn]
     tx_outs: List[TxOut]
 
     def __init__(self, tx_ins: List[TxIn], tx_outs: List[TxOut]) -> None:
-        super(BitcoinTransaction, self).__init__()
+        super(CoinTransaction, self).__init__()
         # The list of transaction entries
         self.tx_ins = tx_ins
         # The list of transaction outputs

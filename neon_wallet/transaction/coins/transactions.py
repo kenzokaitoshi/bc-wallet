@@ -9,12 +9,12 @@ import collections
 
 # Import ecdsa module for ECDSA signing and verification
 import ecdsa
-from neon_wallet.transaction.bitcoin_transaction import (
-    BitcoinTransaction as Transaction,
+from neon_wallet.transaction.coins.coin_transaction import (
+    CoinTransaction as Transaction,
 )
-from neon_wallet.transaction.tx_in import TxIn
-from neon_wallet.transaction.tx_out import TxOut
-from neon_wallet.transaction.unspent_tx_out import UnspentTxOut
+from neon_wallet.transaction.coins.tx_in import TxIn
+from neon_wallet.transaction.coins.tx_out import TxOut
+from neon_wallet.transaction.coins.unspent_tx_out import UnspentTxOut
 
 COINBASE_AMOUNT: float = 50
 

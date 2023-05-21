@@ -1,8 +1,10 @@
 """helpers test module transaction pool"""
 import ecdsa
-from neon_wallet.transaction.bitcoin_transaction import Transaction
-from neon_wallet.transaction.tx_in import TxIn
-from neon_wallet.transaction.tx_out import TxOut
+from neon_wallet.transaction.coins.coin_transaction import (
+    CoinTransaction as Transaction,
+)
+from neon_wallet.transaction.coins.tx_in import TxIn
+from neon_wallet.transaction.coins.tx_out import TxOut
 from tests.helpers_data import tx_out_1
 
 
