@@ -1,5 +1,7 @@
 """test for transaction module"""
-from neon_wallet.transaction.transaction import Transaction
+from neon_wallet.transaction.bitcoin_transaction import (
+    BitcoinTransaction as Transaction,
+)
 from neon_wallet.transaction.transactions import (
     find_unspent_tx_out,
     get_transaction_id,

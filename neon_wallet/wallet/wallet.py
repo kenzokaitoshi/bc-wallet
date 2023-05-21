@@ -1,12 +1,12 @@
 """abstract wallet class"""
 
 from abc import ABCMeta, abstractmethod
-from typing import Any
+from typing import Any, TypeVar, Generic
 
-from neon_wallet.transaction.transaction import Transaction
+T = TypeVar("T")
 
 
-class Wallet(object, metaclass=ABCMeta):
+class Wallet(Generic[T], object, metaclass=ABCMeta):
     """Wallet abstract class"""
 
     def __init__(self, symbol: str) -> None:
@@ -53,6 +53,6 @@ class Wallet(object, metaclass=ABCMeta):
 
     # Define a function to send a transaction
     @abstractmethod
-    def send_transaction(self, address: str, amount: float) -> Transaction:
+    def send_transaction(self, address: str, amount: float) -> T:
         """send transaction"""
         raise NotImplementedError

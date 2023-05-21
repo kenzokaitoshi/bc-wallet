@@ -13,7 +13,9 @@ import ecdsa
 # similar to lodash
 import pydash
 
-from neon_wallet.transaction.transaction import Transaction
+from neon_wallet.transaction.bitcoin_transaction import (
+    BitcoinTransaction as Transaction,
+)
 from neon_wallet.transaction.transactions import (
     get_public_key,
     get_transaction_id,

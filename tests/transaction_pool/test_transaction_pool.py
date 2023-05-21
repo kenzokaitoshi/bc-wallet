@@ -1,5 +1,5 @@
 """test transaction pool module"""
-from neon_wallet.transaction.transaction import Transaction
+from neon_wallet.transaction.bitcoin_transaction import Transaction
 from neon_wallet.transaction_pool.transaction_pool import TransactionPool
 from tests.transaction.helpers_tests import seeder
 from tests.transaction_pool.helpers import tx_pool_seeder
