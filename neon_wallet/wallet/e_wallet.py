@@ -95,6 +95,10 @@ class EWallet(Wallet[Transaction]):
             # Throw ValueError if amount is negative
             raise ValueError("Amount must be positive or zero")
 
+    def convert(self, base: str, currency: str) -> float:
+        """convert wallet currency to another currency"""
+        return self.convert(base, currency)
+
     # Define a method that sends an amount in euros to another
     # wallet address
     def send_transaction(
