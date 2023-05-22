@@ -1,4 +1,5 @@
-# Import
+"""test wallet class"""
+
 from neon_wallet.wallet.coin_wallet import CoinWallet
 
 
@@ -9,7 +10,8 @@ def test_convert_balance_to() -> None:
     devise_origine, devise_cible = "BTC", "EUR"
     solde_cad = wallet.convert_balance_to(devise_origine, devise_cible)
     assert True is isinstance(solde_cad, float)
-    assert round(solde_cad, 1) == 1254143.7
+    # this value is not constant, the currency conversion changes constantly
+    # assert round(solde_cad, 1) == 1254143.7
 
 
 def test_convert_wallet_balance() -> None:
@@ -19,4 +21,5 @@ def test_convert_wallet_balance() -> None:
     devise_origine, devise_cible = "BTC", "EUR"
     solde_cad = wallet.convert(devise_origine, devise_cible)
     assert True is isinstance(solde_cad, float)
-    assert round(solde_cad, 1) == 1250381.2
+    # this value is not constant, the currency conversion changes constantly
+    # assert round(solde_cad, 1) == 1250381.2
