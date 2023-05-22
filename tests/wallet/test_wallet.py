@@ -1,5 +1,5 @@
 # Import
-from neon_wallet.wallet.bitcoin_wallet import CoinWallet
+from neon_wallet.wallet.coin_wallet import CoinWallet
 
 
 def test_convert_balance_to() -> None:

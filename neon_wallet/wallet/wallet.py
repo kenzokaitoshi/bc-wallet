@@ -38,12 +38,6 @@ class Wallet(Generic[T], object, metaclass=ABCMeta):
         """generate private key"""
         raise NotImplementedError
 
-    # Define a function to initialize the wallet
-    @abstractmethod
-    def init_wallet(self) -> None:
-        """initialize wallet"""
-        raise NotImplementedError
-
     # Define a function to delete the wallet
     @abstractmethod
     def delete_wallet(self) -> None:
@@ -111,12 +105,12 @@ class Wallet(Generic[T], object, metaclass=ABCMeta):
         url = f"{uri}?from={origin}&to={cible}&amount={solde}"
         # Make a GET request to the api and get the response
         response = requests.get(url)
-        print('response', response)
+        print("response", response)
         # Check response status
         if response.status_code == 200:
             # Convert response to JSON
             data = response.json()
-            print('data: ', data)
+            print("data: ", data)
             # Extract the converted balance
             balance_convert = data["result"]
             print(balance_convert)
