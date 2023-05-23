@@ -1,7 +1,6 @@
 """abstract wallet class"""
 
-from abc import ABCMeta, abstractmethod
-from typing import Any, TypeVar, Generic
+from typing import TypeVar
 
 # Import the requests module to make HTTP requests
 import requests
@@ -9,7 +8,7 @@ import requests
 T = TypeVar("T")
 
 
-class Wallet(Generic[T], object, metaclass=ABCMeta):
+class Wallet:
     """Wallet abstract class"""
 
     balance: float = 0
@@ -18,43 +17,6 @@ class Wallet(Generic[T], object, metaclass=ABCMeta):
         # symbol define the type currency like Euro, BTC ...etc
         self.symbol = symbol
         self.symbol_native = "€"
-
-    # Define a function to read the private key from a file
-    @abstractmethod
-    def get_private_from_wallet(self) -> str:
-        """get private from wallet"""
-        raise NotImplementedError
-
-    # Define a function to get the public key from
-    # of the private key
-    @abstractmethod
-    def get_public_from_wallet(self) -> Any:
-        """get public from wallet"""
-        raise NotImplementedError
-
-    # Define a function to generate a random private key
-    @abstractmethod
-    def generate_private_key(self) -> Any:
-        """generate private key"""
-        raise NotImplementedError
-
-    # Define a function to delete the wallet
-    @abstractmethod
-    def delete_wallet(self) -> None:
-        """delete wallet"""
-        raise NotImplementedError
-
-    # Define a function to get account balance
-    @abstractmethod
-    def get_account_balance(self) -> float:
-        """get account balance"""
-        raise NotImplementedError
-
-    # Define a function to send a transaction
-    @abstractmethod
-    def send_transaction(self, address: str, amount: float) -> T:
-        """send transaction"""
-        raise NotImplementedError
 
     # Define a method that converts the wallet balance
     # in another currency
@@ -69,7 +31,7 @@ class Wallet(Generic[T], object, metaclass=ABCMeta):
             url = uri + currency
             # Make a GET request to the URL and get the response as
             # dictionary form
-            response = requests.get(url).json()
+            response = requests.get(url, timeout=60).json()
             # Check that the response contains the "success" and "rates" keys
             if "success" in response and "rates" in response:
                 # Check that the value of the "success" key is True
@@ -104,7 +66,7 @@ class Wallet(Generic[T], object, metaclass=ABCMeta):
         uri = "https://api.exchangerate.host/convert"
         url = f"{uri}?from={origin}&to={cible}&amount={solde}"
         # Make a GET request to the api and get the response
-        response = requests.get(url)
+        response = requests.get(url, timeout=60)
         print("response", response)
         # Check response status
         if response.status_code == 200:

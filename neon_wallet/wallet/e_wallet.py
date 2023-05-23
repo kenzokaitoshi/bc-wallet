@@ -12,7 +12,7 @@ from neon_wallet.transaction.fiduciary.e_transaction import (
 from neon_wallet.wallet.wallet import Wallet
 
 
-class EWallet(Wallet[Transaction]):
+class EWallet(Wallet):
     """Currency wallet class"""
 
     url: str = ""  # API url to send transaction to the recipient
@@ -143,7 +143,11 @@ class EWallet(Wallet[Transaction]):
                     # network transactions
                     # Make a POST request to the URL with the
                     # transaction as data
-                    response = requests.post(self.url, data=transaction)
+                    response = requests.post(
+                        self.url,
+                        data=transaction,
+                        timeout=60,
+                    )
                     # Check that the response contains the "success" key
                     if "success" in response.json():
                         # Check that the value of the "success" key is True
