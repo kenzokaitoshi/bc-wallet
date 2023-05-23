@@ -2,3 +2,4 @@ pytest
 pydash==7.0.3
 ecdsa==0.18.0
 requests==2.30.0
+eth_utils==2.1.0 
