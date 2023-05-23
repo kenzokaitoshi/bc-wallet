@@ -32,7 +32,7 @@ def test_instanciation_of_wallet() -> None:
     """test instanciation of wallet"""
     _w = Wallet("ETH")
 
-    # Conditionner l'héritage multiple en fonction du symbole
+    # Condition multiple inheritance based on symbol
     if _w.symbol == "ETH":
         _w.__class__ = EtherWallet
     elif _w.symbol in ["BTC", "LIC", "BC"]:
@@ -40,7 +40,7 @@ def test_instanciation_of_wallet() -> None:
     elif _w.symbol in ["EUR", "CFA", "US", "YEN"]:
         _w.__class__ = EWallet
 
-    # Vérifier le type de la classe héritée
+    # Check type of inherited class
     assert True is isinstance(_w, EtherWallet)  # True
     assert False is isinstance(_w, CoinWallet)  # False
     assert False is isinstance(_w, EWallet)  # False
