@@ -4,21 +4,19 @@ import hashlib
 import ecdsa
 import eth_utils
 
-from neon_wallet.wallet.wallet import Wallet
 
-
-class EtherWallet(Wallet):
+class EtherWallet:
     """Ethereum wallet class"""
 
     # Define the constructor that generates a private/public key pair
     def __init__(self, symbol: str) -> None:
-        super(EtherWallet, self).__init__(symbol)
         # Generate private key from secp256k1 curve
         self.private_key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
         # Generate public key from private key
         self.public_key = self.private_key.get_verifying_key()
         # Generate an ethereum address from the public key
         self.address = self.generate_address()
+        self.symbol = symbol
 
     # Define a method that converts the private key to hexadecimal format
     def get_private_from_wallet(self) -> Any:

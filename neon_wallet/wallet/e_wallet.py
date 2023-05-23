@@ -12,7 +12,7 @@ from neon_wallet.transaction.fiduciary.e_transaction import (
 from neon_wallet.wallet.wallet import Wallet
 
 
-class EWallet(Wallet):
+class EWallet(Wallet[Transaction]):
     """Currency wallet class"""
 
     url: str = ""  # API url to send transaction to the recipient
@@ -22,7 +22,7 @@ class EWallet(Wallet):
     def __init__(self, symbol: str, amount: float = 0) -> None:
         super(EWallet, self).__init__(symbol)
         # Generate a pair of public and private keys using the SECP256k1 curve
-        self.private_key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
+        self.private_key = self.generate_private_key()
         self.public_key = self.private_key.get_verifying_key()
         # Check that the amount is a positive or zero number
         self.symbol = symbol

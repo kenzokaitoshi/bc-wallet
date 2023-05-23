@@ -31,7 +31,7 @@ from neon_wallet.wallet.wallet import Wallet
 PRIVATE_KEY = "node/wallet/private_key"
 
 
-class CoinWallet(Wallet):
+class CoinWallet(Wallet[Transaction]):
     """wallet class"""
 
     # Create an ECDSA object from the secp256k1 curve

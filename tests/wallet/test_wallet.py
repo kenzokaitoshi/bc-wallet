@@ -1,9 +1,9 @@
 """test wallet class"""
 
 from neon_wallet.wallet.coin_wallet import CoinWallet
+from neon_wallet.wallet.core import wallet
 from neon_wallet.wallet.e_wallet import EWallet
 from neon_wallet.wallet.ether_wallet import EtherWallet
-from neon_wallet.wallet.wallet import Wallet
 
 
 def test_convert_balance_to() -> None:
@@ -30,17 +30,9 @@ def test_convert_wallet_balance() -> None:
 
 def test_instanciation_of_wallet() -> None:
     """test instanciation of wallet"""
-    _w = Wallet("ETH")
-
-    # Condition multiple inheritance based on symbol
-    if _w.symbol == "ETH":
-        _w.__class__ = EtherWallet
-    elif _w.symbol in ["BTC", "LIC", "BC"]:
-        _w.__class__ = CoinWallet
-    elif _w.symbol in ["EUR", "CFA", "US", "YEN"]:
-        _w.__class__ = EWallet
+    _w = wallet("EUR")
 
     # Check type of inherited class
-    assert True is isinstance(_w, EtherWallet)  # True
+    assert False is isinstance(_w, EtherWallet)  # False
     assert False is isinstance(_w, CoinWallet)  # False
-    assert False is isinstance(_w, EWallet)  # False
+    assert True is isinstance(_w, EWallet)  # True
