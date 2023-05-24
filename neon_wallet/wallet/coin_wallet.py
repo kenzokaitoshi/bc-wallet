@@ -1,11 +1,12 @@
 """wallet module"""
 # Import ecdsa library to use secp256k1 curve
+import hashlib
 import json
-import os
 from typing import Any, List
 
 # Import copy module to clone objects
 import copy
+import base58
 import ecdsa
 
 
@@ -28,8 +29,6 @@ from neon_wallet.transaction.coins.unspent_tx_out import UnspentTxOut
 from neon_wallet.transaction_pool.transaction_pool import TransactionPool
 from neon_wallet.wallet.wallet import Wallet
 
-PRIVATE_KEY = "node/wallet/private_key"
-
 
 class CoinWallet(Wallet[Transaction]):
     """wallet class"""
@@ -37,34 +36,28 @@ class CoinWallet(Wallet[Transaction]):
     # Create an ECDSA object from the secp256k1 curve
     EC = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
 
-    # Set private key location
-    privateKeyLocation = os.environ.get("PRIVATE_KEY") or "{PRIVATE_KEY}"
     unspent_tx_outs: List[UnspentTxOut] = []
 
     def __init__(self, symbol: str = "BTC") -> None:
         super(CoinWallet, self).__init__(symbol)
         self.symbol = symbol
+        self.private_key = self.generate_private_key()
+        self.public_key = self.get_public_from_wallet()
+
+    # Define a function to generate a random private key
+    def generate_private_key(self) -> Any:
+        """generate private key"""
+        # Create an ECDSA object from the secp256k1 curve
+        key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
+        # Get the private key as a string
+        # in hexadecimal
+        return key.to_string().hex()
 
     # Define a function to read the private key from a file
-    def get_private_from_wallet(self) -> str:
+    def get_private_from_wallet(self) -> Any:
         """get private from wallet"""
         # Open file in read and binary mode
-        with open(self.privateKeyLocation, "rb") as file:
-            # Read file contents and convert to string of characters
-            buffer = file.read()
-            return buffer.decode()
-
-    # Define a function to replace the list of UnspentTxOuts
-    # by a new list
-    def set_unspent_tx_outs(
-        self,
-        new_unspent_tx_out: List[UnspentTxOut],
-    ) -> None:
-        """set unspent tx outs"""
-        # Display the new list of UnspentTxOuts
-        print(f"replacing unspentTxouts with: {new_unspent_tx_out}")
-        # Assign the new list to the unspentTxOuts global variable
-        self.unspent_tx_outs = new_unspent_tx_out
+        return self.private_key
 
     # Define a function to get the public key from
     # of the private key
@@ -80,36 +73,36 @@ class CoinWallet(Wallet[Transaction]):
         # in compressed hexadecimal
         return key.get_verifying_key().to_string("compressed").hex()
 
-    # Define a function to generate a random private key
-    def generate_private_key(self) -> Any:
-        """generate private key"""
-        # Create an ECDSA object from the secp256k1 curve
-        key = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
-        # Get the private key as a string
-        # in hexadecimal
-        return key.to_string().hex()
+    def generate_address(self, prefix: bytes) -> Any:
+        """generate wallet address from public key"""
+        public_key_bytes = bytes.fromhex(self.public_key)
+        sha256_pk = hashlib.sha256(public_key_bytes).digest()
+        ripemd160_pk = hashlib.new("ripemd160", sha256_pk).digest()
+        extended_ripemd160_pk = prefix + ripemd160_pk
+        sha256_1 = hashlib.sha256(extended_ripemd160_pk).digest()
+        sha256_2 = hashlib.sha256(sha256_1).digest()
+        checksum = sha256_2[:4]
+        final_key = extended_ripemd160_pk + checksum
+        address = base58.b58encode(final_key)
+        return address.decode()
 
-    # Define a function to initialize the wallet
-    def init_wallet(self) -> None:
-        """init wallet"""
-        pr_key_loc = self.privateKeyLocation
-        # Do not overwrite existing private keys
-        if os.path.exists(pr_key_loc):
-            return
-        # Generate a new private key
-        new_private_key = self.generate_private_key()
-        # Write the private key to the file
-        with open(pr_key_loc, "w", encoding="utf8") as file:
-            file.write(new_private_key)
-        # Display a message indicating the location of the file
-        print(f"nouveau portefeuille avec clé privée créé à : {pr_key_loc}")
+    # Define a function to replace the list of UnspentTxOuts
+    # by a new list
+    def set_unspent_tx_outs(
+        self,
+        new_unspent_tx_out: List[UnspentTxOut],
+    ) -> None:
+        """set unspent tx outs"""
+        # Display the new list of UnspentTxOuts
+        print(f"replacing unspentTxouts with: {new_unspent_tx_out}")
+        # Assign the new list to the unspentTxOuts global variable
+        self.unspent_tx_outs = new_unspent_tx_out
 
     # Define a function to delete the wallet
     def delete_wallet(self) -> None:
         """delete wallet"""
-        # If the file exists, delete it
-        if os.path.exists(self.privateKeyLocation):
-            os.remove(self.privateKeyLocation)
+        self.private_key = ""
+        self.public_key = ""
 
     # Define a function to get the balance of an address from
     # of unspent outputs

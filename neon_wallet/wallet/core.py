@@ -14,7 +14,7 @@ def wallet(symbol: str) -> Any:
     # Condition multiple inheritance based on symbol
     if symbol == "ETH":
         return EtherWallet(symbol)
-    elif symbol in ["BTC", "LIC", "BC"]:
+    elif symbol in ["BTC", "BCH", "LTC", "DASH", "ZEC", "BSV"]:
         return CoinWallet(symbol)
     elif symbol in ["EUR", "CFA", "US", "YEN"]:
         return EWallet(symbol)

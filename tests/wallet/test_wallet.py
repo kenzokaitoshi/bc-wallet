@@ -8,10 +8,10 @@ from neon_wallet.wallet.ether_wallet import EtherWallet
 
 def test_convert_balance_to() -> None:
     """test convert balance from currency to new currency"""
-    wallet = CoinWallet()
-    wallet.balance = 50
+    wall = CoinWallet()
+    wall.balance = 50
     devise_origine, devise_cible = "BTC", "EUR"
-    solde_cad = wallet.convert_balance_to(devise_origine, devise_cible)
+    solde_cad = wall.convert_balance_to(devise_origine, devise_cible)
     assert True is isinstance(solde_cad, float)
     # this value is not constant, the currency conversion changes constantly
     # assert round(solde_cad, 1) == 1254143.7
@@ -19,10 +19,10 @@ def test_convert_balance_to() -> None:
 
 def test_convert_wallet_balance() -> None:
     """test convert balance from currency to new currency"""
-    wallet = CoinWallet()
-    wallet.balance = 50
+    wall = CoinWallet()
+    wall.balance = 50
     devise_origine, devise_cible = "BTC", "EUR"
-    solde_cad = wallet.convert(devise_origine, devise_cible)
+    solde_cad = wall.convert(devise_origine, devise_cible)
     assert True is isinstance(solde_cad, float)
     # this value is not constant, the currency conversion changes constantly
     # assert round(solde_cad, 1) == 1250381.2
