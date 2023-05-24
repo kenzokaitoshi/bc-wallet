@@ -33,9 +33,6 @@ from neon_wallet.wallet.wallet import Wallet
 class CoinWallet(Wallet[Transaction]):
     """wallet class"""
 
-    # Create an ECDSA object from the secp256k1 curve
-    EC = ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
-
     unspent_tx_outs: List[UnspentTxOut] = []
 
     def __init__(self, symbol: str = "BTC") -> None:
@@ -85,6 +82,26 @@ class CoinWallet(Wallet[Transaction]):
         final_key = extended_ripemd160_pk + checksum
         address = base58.b58encode(final_key)
         return address.decode()
+
+    def get_address(self) -> Any:
+        """get address of current wallet"""
+        utxo_cryptos = ["BTC", "BCH", "LTC", "DASH", "ZEC", "BSV"]
+        address = None
+        if self.symbol in utxo_cryptos and (
+            self.symbol == "BTC" or self.symbol == "BSV"
+        ):
+            address = self.generate_address(b"\x00")
+        elif self.symbol in utxo_cryptos and (
+            self.symbol == "BCH" or self.symbol == "ZEC"
+        ):
+            address = self.generate_address(b"\x1C")
+        elif self.symbol in utxo_cryptos and self.symbol == "LTC":
+            address = self.generate_address(b"\x30")
+        elif self.symbol in utxo_cryptos and self.symbol == "DASH":
+            address = self.generate_address(b"\x4C")
+        else:
+            print(f"This symbol {self.symbol} isn't an utxo crypto-monaie")
+        return address
 
     # Define a function to replace the list of UnspentTxOuts
     # by a new list

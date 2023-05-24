@@ -16,5 +16,5 @@ def wallet(symbol: str) -> Any:
         return EtherWallet(symbol)
     elif symbol in ["BTC", "BCH", "LTC", "DASH", "ZEC", "BSV"]:
         return CoinWallet(symbol)
-    elif symbol in ["EUR", "CFA", "US", "YEN"]:
+    elif symbol in ["EUR", "CFA", "USD", "YEN"]:
         return EWallet(symbol)
