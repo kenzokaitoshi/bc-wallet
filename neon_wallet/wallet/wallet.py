@@ -17,7 +17,6 @@ class Wallet(Generic[T], object, metaclass=ABCMeta):
     def __init__(self, symbol: str) -> None:
         # symbol define the type currency like Euro, BTC ...etc
         self.symbol = symbol
-        self.symbol_native = "€"
 
     # Define a function to read the private key from a file
     @abstractmethod
