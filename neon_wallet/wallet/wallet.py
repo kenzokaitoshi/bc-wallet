@@ -12,11 +12,10 @@ T = TypeVar("T")
 class Wallet(Generic[T], object, metaclass=ABCMeta):
     """Wallet abstract class"""
 
-    balance: float = 0
-
     def __init__(self, symbol: str) -> None:
         # symbol define the type currency like Euro, BTC ...etc
         self.symbol = symbol
+        self.balance = 0.0
 
     # Define a function to read the private key from a file
     @abstractmethod

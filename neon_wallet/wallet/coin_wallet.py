@@ -62,31 +62,54 @@ class CoinWallet(Wallet[Transaction]):
         """get public from wallet"""
         # Call the getPrivateFromWallet function to read the private key
         private_key = self.get_private_from_wallet()
-        # Create an ECDSA object from the private key in hexadecimal
-        key = ecdsa.SigningKey.from_string(
-            bytes.fromhex(private_key), curve=ecdsa.SECP256k1
-        )
-        # Obtain the corresponding public key and encode it
-        # in compressed hexadecimal
-        return key.get_verifying_key().to_string("compressed").hex()
+        private_key_bytes = bytes.fromhex(private_key)
 
-    def generate_address(self, prefix: bytes) -> Any:
+        # Appliquer la fonction de multiplication scalaire
+        # sur la courbe secp256k1
+        curve = ecdsa.SECP256k1
+        private_key_point = ecdsa.util.string_to_number(private_key_bytes)
+        public_key_point = curve.generator * private_key_point
+
+        # Convertir les coordonnées x et y en octets
+        _x = public_key_point.x()
+        _y = public_key_point.y()
+        x_bytes = _x.to_bytes(32, "big")
+        y_bytes = _y.to_bytes(32, "big")
+
+        # Concaténer les octets de x et y avec le préfixe 04
+        prefix = b"\x04"
+        public_key_bytes = prefix + x_bytes + y_bytes
+
+        # Convertir les octets de la clé publique en hexadécimal
+        return public_key_bytes.hex()
+
+    def generate_address(self, prefix: bytes) -> str:
         """generate wallet address from public key"""
-        public_key_bytes = bytes.fromhex(self.public_key)
-        sha256_pk = hashlib.sha256(public_key_bytes).digest()
-        ripemd160_pk = hashlib.new("ripemd160", sha256_pk).digest()
-        extended_ripemd160_pk = prefix + ripemd160_pk
-        sha256_1 = hashlib.sha256(extended_ripemd160_pk).digest()
-        sha256_2 = hashlib.sha256(sha256_1).digest()
-        checksum = sha256_2[:4]
-        final_key = extended_ripemd160_pk + checksum
-        address = base58.b58encode(final_key)
-        return address.decode()
+        # Call the getPublicFromWallet function to get the public key
+        public_key = self.get_public_from_wallet()
+        # Decode the public key from hexadecimal to bytes
+        public_key_bytes = bytes.fromhex(public_key)
+        # Apply the SHA256 hash function to the public key bytes
+        sha256 = hashlib.sha256(public_key_bytes)
+        # Apply the RIPEMD160 hash function to the SHA256 hash
+        ripemd160 = hashlib.new("ripemd160")
+        ripemd160.update(sha256.digest())
+        # Prepend the prefix byte to the RIPEMD160 hash
+        extended_ripemd160 = prefix + ripemd160.digest()
+        # Apply the SHA256 hash function twice to the extended RIPEMD160
+        a_sha = hashlib.sha256(extended_ripemd160).digest()
+        checksum = hashlib.sha256(a_sha).digest()
+        # Append the first 4 bytes of the checksum to the extended RIPEMD160
+        address_bytes = extended_ripemd160 + checksum[:4]
+        # Encode the address bytes to base58
+        address = base58.b58encode(address_bytes)
+        # Return the address as a string
+        return address.decode("utf-8")
 
-    def get_address(self) -> Any:
+    def get_address(self) -> str:
         """get address of current wallet"""
         utxo_cryptos = ["BTC", "BCH", "LTC", "DASH", "ZEC", "BSV"]
-        address = None
+        address = ""
         if self.symbol in utxo_cryptos and (
             self.symbol == "BTC" or self.symbol == "BSV"
         ):
@@ -147,7 +170,8 @@ class CoinWallet(Wallet[Transaction]):
         unspent_tx_outs = self.get_unspent_tx_outs()
         # Return account balance based on public key
         # and UnspentTxOuts
-        return float(self.get_balance(public_key, unspent_tx_outs))
+        self.balance = float(self.get_balance(public_key, unspent_tx_outs))
+        return self.balance
 
     # Define a function to get the list of UnspentTxOuts
     def get_unspent_tx_outs(self) -> List[UnspentTxOut]:
@@ -166,6 +190,7 @@ class CoinWallet(Wallet[Transaction]):
     def send_transaction(self, address: str, amount: float) -> Transaction:
         """send transaction"""
         tx_pool = TransactionPool()
+        print("tx pool: ", tx_pool)
         # Create transaction with address, amount, private key
         # of the wallet, the list of UnspentTxOuts and the pool of
         # transactions

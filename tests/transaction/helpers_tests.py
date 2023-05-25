@@ -38,6 +38,16 @@ def unspent_tx_outs() -> list[UnspentTxOut]:
     return [unspent_tx_out]
 
 
+def unspent_tx_outs_of_address(addr: str) -> list[UnspentTxOut]:
+    """get seed of unspent_tx_outs"""
+    # Create an unspent exit belonging to this address
+    # with an arbitrary amount
+    unspent_tx_out = UnspentTxOut("1234", 0, addr, 50)
+
+    # Create a list containing this unspent output
+    return [unspent_tx_out]
+
+
 def seeder() -> Tuple[Transaction, list[UnspentTxOut], TxIn]:
     """seeder"""
     # Create an unspent exit belonging to this address
