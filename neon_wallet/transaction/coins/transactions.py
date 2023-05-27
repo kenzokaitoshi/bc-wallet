@@ -346,12 +346,26 @@ def sign_tx_in(
 # of the private key
 def get_public_key(a_private_key: str) -> Any:
     """get public key"""
-    # Create an ecdsa key from the private key in hexadecimal
-    key = ecdsa.SigningKey.from_string(
-        bytes.fromhex(a_private_key), curve=ecdsa.SECP256k1
-    )
-    # Retrieve the associated public key and return it in hexadecimal
-    return key.get_verifying_key().to_string().hex()
+    private_key_bytes = bytes.fromhex(a_private_key)
+
+    # Appliquer la fonction de multiplication scalaire
+    # sur la courbe secp256k1
+    curve = ecdsa.SECP256k1
+    private_key_point = ecdsa.util.string_to_number(private_key_bytes)
+    public_key_point = curve.generator * private_key_point
+
+    # Convertir les coordonnées x et y en octets
+    _x = public_key_point.x()
+    _y = public_key_point.y()
+    x_bytes = _x.to_bytes(32, "big")
+    y_bytes = _y.to_bytes(32, "big")
+
+    # Concaténer les octets de x et y avec le préfixe 04
+    prefix = b"\x04"
+    public_key_bytes = prefix + x_bytes + y_bytes
+
+    # Convertir les octets de la clé publique en hexadécimal
+    return public_key_bytes.hex()
 
 
 # Define a function to update the list of UnspentTxOuts

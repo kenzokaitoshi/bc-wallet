@@ -40,6 +40,7 @@ class CoinWallet(Wallet[Transaction]):
         self.symbol = symbol
         self.private_key = self.generate_private_key()
         self.public_key = self.get_public_from_wallet()
+        self.address = self.get_address()
 
     # Define a function to generate a random private key
     def generate_private_key(self) -> Any:
@@ -64,23 +65,23 @@ class CoinWallet(Wallet[Transaction]):
         private_key = self.get_private_from_wallet()
         private_key_bytes = bytes.fromhex(private_key)
 
-        # Appliquer la fonction de multiplication scalaire
-        # sur la courbe secp256k1
+        # Apply the scalar multiplication function
+        # on curve secp256k1
         curve = ecdsa.SECP256k1
         private_key_point = ecdsa.util.string_to_number(private_key_bytes)
         public_key_point = curve.generator * private_key_point
 
-        # Convertir les coordonnées x et y en octets
+        # Convert x and y coordinates to bytes
         _x = public_key_point.x()
         _y = public_key_point.y()
         x_bytes = _x.to_bytes(32, "big")
         y_bytes = _y.to_bytes(32, "big")
 
-        # Concaténer les octets de x et y avec le préfixe 04
+        # Concatenate bytes of x and y with prefix 04
         prefix = b"\x04"
         public_key_bytes = prefix + x_bytes + y_bytes
 
-        # Convertir les octets de la clé publique en hexadécimal
+        # Convert public key bytes to hexadecimal
         return public_key_bytes.hex()
 
     def generate_address(self, prefix: bytes) -> str:
