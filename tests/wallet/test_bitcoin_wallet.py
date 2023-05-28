@@ -75,3 +75,44 @@ def test_get_my_unspent_transaction_outputs() -> None:
         else False
         for output in outputs
     )
+
+
+def test_get_unspent_tx_outs() -> None:
+    """test set unspent tx outs"""
+    # Create a wallet with the symbol "BTC"
+    alice = wallet("BTC")
+    benjamin = wallet("BTC")
+    steve = wallet("BTC")
+
+    # Create some unspent outputs with dummy values
+    unspent_tx_outs = [
+        UnspentTxOut("tx1", 0, alice.get_public_from_wallet(), 10),
+        UnspentTxOut("tx2", 1, benjamin.get_public_from_wallet(), 20),
+        UnspentTxOut("tx3", 2, steve.get_public_from_wallet(), 30),
+    ]
+    # Set the wallet's unspent outputs to the list
+    alice.set_unspent_tx_outs(unspent_tx_outs)
+    utxos = alice.get_unspent_tx_outs()
+    assert len(utxos) == 3
+    assert True is all(isinstance(utxo, UnspentTxOut) for utxo in utxos)
+
+
+def test_send_transaction() -> None:
+    """test get unspent tx outs"""
+    alice = wallet("BTC")
+    benjamin = wallet("BTC")
+    unspent_tx_outs = [
+        UnspentTxOut("tx1", 0, alice.get_public_from_wallet(), 10),
+        UnspentTxOut("tx2", 1, alice.get_public_from_wallet(), 20),
+        UnspentTxOut("tx2", 2, benjamin.get_public_from_wallet(), 30),
+    ]
+    alice.set_unspent_tx_outs(unspent_tx_outs)
+    alice.send_transaction(benjamin.get_public_from_wallet(), 10)
+
+
+# def send_transaction(self, address: str, amount: float)
+# def find_unspent_tx_outs
+# def find_tx_outs_for_amount
+# def create_tx_outs
+# def filter_tx_pool_txs
+# def create_transaction

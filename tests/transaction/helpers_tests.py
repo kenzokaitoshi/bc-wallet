@@ -84,7 +84,7 @@ def seeder() -> Tuple[Transaction, list[UnspentTxOut], TxIn]:
 tx1 = Transaction(
     tx_ins=[
         TxIn(
-            tx_out_id="tx0",
+            tx_out_id="0",
             tx_out_index=0,
             signature=tx_ins_sig_1,
         )
@@ -103,7 +103,7 @@ tx1 = Transaction(
 tx2 = Transaction(
     tx_ins=[
         TxIn(
-            tx_out_id="tx1",
+            tx_out_id="1",
             tx_out_index=0,
             signature=tx_ins_sig_2,
         )

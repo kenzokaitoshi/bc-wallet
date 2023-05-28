@@ -1,7 +1,8 @@
 """wallet module"""
 # Import ecdsa library to use secp256k1 curve
 import hashlib
-import json
+
+# import json
 from typing import Any, List
 
 # Import copy module to clone objects
@@ -19,7 +20,6 @@ from neon_wallet.transaction.coins.coin_transaction import (
 )
 from neon_wallet.transaction.coins.transactions import (
     get_public_key,
-    get_transaction_id,
     sign_tx_in,
 )
 from neon_wallet.transaction.coins.tx_in import TxIn
@@ -191,7 +191,6 @@ class CoinWallet(Wallet[Transaction]):
     def send_transaction(self, address: str, amount: float) -> Transaction:
         """send transaction"""
         tx_pool = TransactionPool()
-        print("tx pool: ", tx_pool)
         # Create transaction with address, amount, private key
         # of the wallet, the list of UnspentTxOuts and the pool of
         # transactions
@@ -243,10 +242,7 @@ class CoinWallet(Wallet[Transaction]):
                 left_over_amount = current_amount - amount
                 # Return a dictionary with transaction outputs
                 # included and the remaining amount
-                return {
-                    "includedUnspentTxOuts": included_unspent_tx_outs,
-                    "leftOverAmount": left_over_amount,
-                }
+                return included_unspent_tx_outs, left_over_amount
 
         # If the requested amount is not reached, raise an exception
         # with an error message
@@ -340,7 +336,7 @@ class CoinWallet(Wallet[Transaction]):
         tx_pool: List[Transaction],
     ) -> Transaction:
         """create transaction"""
-        print(f"txPool: {json.dumps(tx_pool)}")
+        # print(f"txPool: {json.dumps(tx_pool)}")
         # Retrieve the address of the creator of the transaction
         # from his private key
         my_address = get_public_key(private_key)
@@ -358,8 +354,9 @@ class CoinWallet(Wallet[Transaction]):
 
         # Find sufficient UnspentTxOuts to cover the amount of
         # the transaction and the rest
-        i_uto, l_oam = self.find_tx_outs_for_amount(amount, my_unspent_tx_outs)
-        included_unspent_tx_outs, left_over_amount = i_uto, l_oam
+        amounts = self.find_tx_outs_for_amount(amount, my_unspent_tx_outs)
+        included_unspent_tx_outs = amounts[0]
+        left_over_amount = amounts[1]
 
         # Create a function to convert an UnspentTxOut to a
         # Unsigned TxIn
@@ -368,7 +365,7 @@ class CoinWallet(Wallet[Transaction]):
             tx_in = TxIn("", 0, "")
             tx_in.tx_out_id = unspent_tx_out.tx_out_id
             tx_in.tx_out_index = unspent_tx_out.tx_out_index
-            return tx_in
+            return tx_in  # retourn bien un objet TxIn
 
         # Create a list of unsigned TxIns from
         # of UnspentTxOuts found
@@ -384,12 +381,15 @@ class CoinWallet(Wallet[Transaction]):
             amount,
             left_over_amount,
         )
-        _tx.id = get_transaction_id(_tx)
 
         # Sign TxIns with the private key of the creator of the transaction
-        _tx.tx_ins = [
-            sign_tx_in(_tx, index, private_key, unspent_tx_outs)
-            for index in range(len(_tx.tx_ins))
-        ]
-
+        rest = []
+        for i, tx_in in enumerate(_tx.tx_ins):
+            _tx.tx_ins[i].signature = sign_tx_in(
+                _tx,
+                i,
+                private_key,
+                unspent_tx_outs,
+            )
+            rest.append(tx_in)
         return _tx

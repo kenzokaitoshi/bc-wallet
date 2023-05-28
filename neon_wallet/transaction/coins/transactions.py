@@ -25,8 +25,10 @@ def get_transaction_id(transaction: Transaction) -> str:
     tx_ins = transaction.tx_ins
     # Concatenate the identifiers and indices of the outputs of
     # transaction of transaction entries
-    tx_ = [tx_in.tx_out_id + str(tx_in.tx_out_index) for tx_in in tx_ins]
+    for tx_in in tx_ins:
+        tx_ = "".join(tx_in.tx_out_id + str(tx_in.tx_out_index))
     tx_in_content = "".join(tx_)
+    print("tx_: ", tx_in_content)
     # Extract list of transaction outputs from transaction
     tx_outs = transaction.tx_outs
     # Concatenate addresses and amounts from transaction outputs
@@ -45,15 +47,10 @@ def get_transaction_id(transaction: Transaction) -> str:
 def validate_transaction(
     transaction: Transaction, a_unspent_tx_outs: List[UnspentTxOut]
 ) -> bool:
-    "validate transaction"
+    """validate transaction"""
     # Check if transaction structure is valid
+    print("test test: ", is_valid_transaction_structure(transaction))
     if not is_valid_transaction_structure(transaction):
-        return False
-
-    # Check if transaction id matches
-    # to the hash of the transaction contents
-    if get_transaction_id(transaction) != transaction.id:
-        print("invalid tx id: " + transaction.id)
         return False
 
     # Check if all transaction inputs are valid
@@ -338,7 +335,7 @@ def sign_tx_in(
 
     # Sign the data with the key and return the signature
     # in hexadecimal
-    signature = to_hex_string(key.sign(data_to_sign))
+    signature = to_hex_string(key.sign(data_to_sign.encode()))
     return signature
 
 
