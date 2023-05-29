@@ -107,7 +107,21 @@ def test_send_transaction() -> None:
         UnspentTxOut("tx2", 2, benjamin.get_public_from_wallet(), 30),
     ]
     alice.set_unspent_tx_outs(unspent_tx_outs)
-    alice.send_transaction(benjamin.get_public_from_wallet(), 10)
+
+    _tx = alice.send_transaction(benjamin.get_public_from_wallet(), 10)
+    print(len(_tx.tx_ins))
+    # Check if the transaction has an id, tx_ins and tx_outs attributes
+    assert True is hasattr(_tx, "id")
+    assert True is hasattr(_tx, "tx_ins")
+    assert True is hasattr(_tx, "tx_outs")
+    # Check if the transaction id is a string
+    assert True is isinstance(_tx.id, str)
+    # Check if the transaction tx_ins and tx_outs are lists
+    assert True is isinstance(_tx.tx_ins, list)
+    assert True is isinstance(_tx.tx_outs, list)
+    # Check if the transaction tx_ins and tx_outs are not empty
+    assert True is (len(_tx.tx_ins) > 0)
+    assert True is (len(_tx.tx_outs) > 0)  
 
 
 # def send_transaction(self, address: str, amount: float)

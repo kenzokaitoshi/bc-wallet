@@ -1,7 +1,9 @@
 """Currency wallet class"""
 
+import hashlib
 import time
 from typing import Any, List
+import base58
 
 import ecdsa
 import requests
@@ -15,15 +17,17 @@ from neon_wallet.wallet.wallet import Wallet
 class EWallet(Wallet[Transaction]):
     """Currency wallet class"""
 
-    url: str = ""  # API url to send transaction to the recipient
+    url: str = ""  # "https://api.exchangerate.host/send"
+    # API url to send transaction to the recipient
 
     # Define the constructor that takes the amount as a parameter
     # initial in a particular currency
     def __init__(self, symbol: str, amount: float = 0) -> None:
         super(EWallet, self).__init__(symbol)
         # Generate a pair of public and private keys using the SECP256k1 curve
-        self.private_key = self.generate_private_key()
-        self.public_key = self.private_key.get_verifying_key()
+        self.private_key = self.get_private_from_wallet()
+        self.public_key = self.get_public_from_wallet()
+        self.address = self.generate_address()
         # Check that the amount is a positive or zero number
         self.symbol = symbol
         self.transactions: List[Transaction] = []
@@ -44,18 +48,61 @@ class EWallet(Wallet[Transaction]):
     # Define a function to read the private key from a file
     def get_private_from_wallet(self) -> Any:
         """get private from wallet"""
+        self.private_key = self.generate_private_key()
         return self.private_key.to_string().hex()
 
     # Define a function to get the public key from
     # of the private key
     def get_public_from_wallet(self) -> Any:
-        """get public from wallet"""
-        return "04" + self.public_key.to_string().hex()
+        """get public key"""
+        private_key_bytes = bytes.fromhex(self.private_key)
+
+        # Appliquer la fonction de multiplication scalaire
+        # sur la courbe secp256k1
+        curve = ecdsa.SECP256k1
+        private_key_point = ecdsa.util.string_to_number(private_key_bytes)
+        public_key_point = curve.generator * private_key_point
+
+        # Convertir les coordonnées x et y en octets
+        _x = public_key_point.x()
+        _y = public_key_point.y()
+        x_bytes = _x.to_bytes(32, "big")
+        y_bytes = _y.to_bytes(32, "big")
+
+        # Concaténer les octets de x et y avec le préfixe 04
+        prefix = b"\x04"
+        public_key_bytes = prefix + x_bytes + y_bytes
+
+        # Convertir les octets de la clé publique en hexadécimal
+        return public_key_bytes.hex()
 
     # Define a function to generate a random private key
     def generate_private_key(self) -> Any:
         """generate private key"""
         return ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
+
+    def generate_address(self) -> str:
+        """generate wallet address from public key"""
+        # Call the getPublicFromWallet function to get the public key
+        public_key = self.get_public_from_wallet()
+        # Decode the public key from hexadecimal to bytes
+        public_key_bytes = bytes.fromhex(public_key)
+        # Apply the SHA256 hash function to the public key bytes
+        sha256 = hashlib.sha256(public_key_bytes)
+        # Apply the RIPEMD160 hash function to the SHA256 hash
+        ripemd160 = hashlib.new("ripemd160")
+        ripemd160.update(sha256.digest())
+        # Prepend the prefix byte to the RIPEMD160 hash
+        extended_ripemd160 = b"\x04" + ripemd160.digest()
+        # Apply the SHA256 hash function twice to the extended RIPEMD160
+        a_sha = hashlib.sha256(extended_ripemd160).digest()
+        checksum = hashlib.sha256(a_sha).digest()
+        # Append the first 4 bytes of the checksum to the extended RIPEMD160
+        address_bytes = extended_ripemd160 + checksum[:4]
+        # Encode the address bytes to base58
+        address = base58.b58encode(address_bytes)
+        # Return the address as a string
+        return address.decode("utf-8")
 
     # Define a function to delete the wallet
     def delete_wallet(self) -> None:
@@ -95,7 +142,7 @@ class EWallet(Wallet[Transaction]):
             # Throw ValueError if amount is negative
             raise ValueError("Amount must be positive or zero")
 
-    def convert(self, base: str, currency: str) -> float:
+    def _convert(self, base: str, currency: str) -> float:
         """convert wallet currency to another currency"""
         return self.convert(base, currency)
 
@@ -114,7 +161,7 @@ class EWallet(Wallet[Transaction]):
             if (
                 address
                 and isinstance(address, str)
-                and len(address) == 66
+                and len(address) == 130
                 and address.startswith("04")
             ):
                 # Check that the balance of the wallet is sufficient to
@@ -135,8 +182,15 @@ class EWallet(Wallet[Transaction]):
                     }
                     # Convert transaction to string
                     message = str(transaction)
-                    # Sign the transaction with the private key of the wallet
-                    signature = self.private_key.sign(message.encode())
+
+                    # Create an ecdsa key from the private key in hexadecimal
+                    key = ecdsa.SigningKey.from_string(
+                        bytes.fromhex(self.private_key), curve=ecdsa.SECP256k1
+                    )
+
+                    # Sign the data with the key and return the signature
+                    # in hexadecimal
+                    signature = key.sign(message.encode())
                     # Add signature to transaction
                     transaction["signature"] = signature.hex()
                     # Define the URL of the API which allows to send

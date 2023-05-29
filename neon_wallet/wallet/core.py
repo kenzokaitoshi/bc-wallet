@@ -1,6 +1,7 @@
 """core"""
 
 
+import json
 from typing import Any
 from neon_wallet.wallet.coin_wallet import CoinWallet
 from neon_wallet.wallet.e_wallet import EWallet
@@ -16,5 +17,17 @@ def wallet(symbol: str) -> Any:
         return EtherWallet(symbol)
     elif symbol in ["BTC", "BCH", "LTC", "DASH", "ZEC", "BSV"]:
         return CoinWallet(symbol)
-    elif symbol in ["EUR", "CFA", "USD", "YEN"]:
+    elif get_currency(symbol):
         return EWallet(symbol)
+
+
+def get_currency(currency: str) -> bool:
+    """get currency"""
+    path = "data/Common-Currency.json"
+    is_true = False
+
+    file = open(path, encoding="utf-8")
+    for key in json.load(file).keys():
+        is_true = False if key == currency else True
+
+    return is_true
