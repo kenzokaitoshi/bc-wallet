@@ -121,7 +121,7 @@ def test_send_transaction() -> None:
     assert True is isinstance(_tx.tx_outs, list)
     # Check if the transaction tx_ins and tx_outs are not empty
     assert True is (len(_tx.tx_ins) > 0)
-    assert True is (len(_tx.tx_outs) > 0)  
+    assert True is (len(_tx.tx_outs) > 0)
 
 
 # def send_transaction(self, address: str, amount: float)
