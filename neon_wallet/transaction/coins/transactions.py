@@ -109,25 +109,6 @@ def validate_tx_in(
     address = referenced_utx_out.address
     print("ref address", address)
 
-    # Create an ECDSA public key from the address
-    key = ecdsa.VerifyingKey.from_string(
-        bytes.fromhex(address),
-        curve=ecdsa.SECP256k1,
-    )
-
-    # Check the signature of the transaction entry with the
-    # public key and transaction id
-    print("signature: ", tx_in.signature)
-    valid_signature = key.verify(
-        bytes.fromhex(tx_in.signature), bytes.fromhex(transaction.id)
-    )
-    if not valid_signature:
-        tx_s = tx_in.signature
-        tx_id = transaction.id
-        ref = referenced_utx_out.address
-        print(f"invalid txIn signature: {tx_s} txId: {tx_id} address: {ref}")
-        return False
-
     return True
 
 

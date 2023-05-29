@@ -383,13 +383,11 @@ class CoinWallet(Wallet[Transaction]):
         )
 
         # Sign TxIns with the private key of the creator of the transaction
-        rest = []
         for i, tx_in in enumerate(_tx.tx_ins):
             _tx.tx_ins[i].signature = sign_tx_in(
                 _tx,
-                i,
+                tx_in.tx_out_index,
                 private_key,
                 unspent_tx_outs,
             )
-            rest.append(tx_in)
         return _tx
