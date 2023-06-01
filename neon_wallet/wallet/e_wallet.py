@@ -17,7 +17,7 @@ from neon_wallet.wallet.wallet import Wallet
 class EWallet(Wallet[Transaction]):
     """Currency wallet class"""
 
-    url: str = ""  # "https://api.exchangerate.host/send"
+    url: str = ""
     # API url to send transaction to the recipient
 
     # Define the constructor that takes the amount as a parameter
@@ -109,15 +109,20 @@ class EWallet(Wallet[Transaction]):
         """delete wallet"""
 
     # Define a method that adds an amount of a currency to the wallet balance
-    def deposit(self, amount: float) -> None:
+    def deposit(self, amount: float, devise: str) -> None:
         """method that add amount of one currency in the balance"""
         # Check that the amount is a positive or zero number
+        a_amount: float = self.convert(str(amount), devise)
         if amount >= 0:
-            # Add amount to balance attribute
-            self.balance += amount
+            if devise != self.symbol:
+                # convert amount before to add to the balance
+                self.balance += a_amount
+            else:
+                # Add amount to balance attribute
+                self.balance += amount
             # Create a "deposit" type transaction with
             # the amount and the currency
-            transaction = Transaction(amount, "deposit", self.symbol)
+            transaction = Transaction(a_amount, "deposit", self.symbol)
             # Add the transaction to the list of wallet transactions
             self.transactions.append(transaction)
         else:
@@ -141,10 +146,6 @@ class EWallet(Wallet[Transaction]):
         else:
             # Throw ValueError if amount is negative
             raise ValueError("Amount must be positive or zero")
-
-    def _convert(self, base: str, currency: str) -> float:
-        """convert wallet currency to another currency"""
-        return self.convert(base, currency)
 
     # Define a method that sends an amount in euros to another
     # wallet address

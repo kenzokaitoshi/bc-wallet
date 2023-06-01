@@ -7,7 +7,7 @@ def test_withdraw_deposit() -> None:
     wallet1 = Wallet("EUR", 100)
     wallet2 = Wallet("EUR", 50)
     wallet1.withdraw(20)
-    wallet2.deposit(20)
+    wallet2.deposit(20, 'EUR')
     assert wallet1.get_account_balance() == 80
     assert wallet2.get_account_balance() == 70
 
