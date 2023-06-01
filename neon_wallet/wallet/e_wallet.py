@@ -81,7 +81,7 @@ class EWallet(Wallet[Transaction]):
         """generate private key"""
         return ecdsa.SigningKey.generate(curve=ecdsa.SECP256k1)
 
-    def generate_address(self) -> str:
+    def generate_address(self) -> Any:
         """generate wallet address from public key"""
         # Call the getPublicFromWallet function to get the public key
         public_key = self.get_public_from_wallet()

@@ -84,7 +84,7 @@ class CoinWallet(Wallet[Transaction]):
         # Convert public key bytes to hexadecimal
         return public_key_bytes.hex()
 
-    def generate_address(self, prefix: bytes) -> str:
+    def generate_address(self, prefix: bytes) -> Any:
         """generate wallet address from public key"""
         # Call the getPublicFromWallet function to get the public key
         public_key = self.get_public_from_wallet()
